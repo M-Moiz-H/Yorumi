@@ -5,6 +5,8 @@
 
 package com.metrolist.music
 
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ForegroundServiceStartNotAllowedException
@@ -395,7 +397,7 @@ class MainActivity : FragmentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         // Yorumi splash — must be called before super + setContent
-        androidx.core.splashscreen.SplashScreen.installSplashScreen(this)
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         window.decorView.layoutDirection = View.LAYOUT_DIRECTION_LTR
         WindowCompat.setDecorFitsSystemWindows(window, false)
