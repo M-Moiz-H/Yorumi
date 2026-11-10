@@ -44,7 +44,7 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew --console=plain assembleFossDebug --warning-mode summary
         env:
-          METROLIST_APPLICATION_ID: com.metrolist.music
+          METROLIST_APPLICATION_ID: com.yorumi.music
           METROLIST_APP_NAME: Yorumi
           PULL_REQUEST: "false"
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
