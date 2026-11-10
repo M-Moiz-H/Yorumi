@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Yorumi launcher icon background — deep void purple -->
+    <color name="ic_launcher_background">#0D0010</color>
+    <color name="ic_launcher_static_background">#0D0010</color>
+
+    <!-- Widget colors for light mode -->
+    <color name="widget_text_primary">#1C1B1F</color>
+    <color name="widget_text_secondary">#49454F</color>
+
+    <!-- Yorumi brand colors -->
+    <color name="yorumi_primary">#7B2FBE</color>
+    <color name="yorumi_primary_dark">#5B1F9E</color>
+    <color name="yorumi_sakura">#B05499</color>
+    <color name="yorumi_night">#0D0010</color>
+</resources>

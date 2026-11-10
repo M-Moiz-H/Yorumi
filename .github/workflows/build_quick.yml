@@ -1,0 +1,84 @@
+name: Yorumi — Quick Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      variant:
+        description: 'APK variant to build'
+        required: true
+        default: 'foss'
+        type: choice
+        options:
+          - foss
+          - gms
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "temurin"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Generate debug keystore
+        run: |
+          keytool -genkey -v \
+            -keystore app/persistent-debug.keystore \
+            -alias androiddebugkey \
+            -keyalg RSA -keysize 2048 \
+            -validity 10000 \
+            -storepass android -keypass android \
+            -dname "CN=Yorumi, OU=Dev, O=Yorumi, L=Unknown, S=Unknown, C=US"
+
+      - name: Build Release APK
+        run: |
+          VARIANT="${{ github.event.inputs.variant }}"
+          VARIANT_CAP="${VARIANT^}"
+          ./gradlew --console=plain assemble${VARIANT_CAP}Release --warning-mode summary
+        env:
+          METROLIST_APPLICATION_ID: com.metrolist.music
+          METROLIST_APP_NAME: Yorumi
+          PULL_REQUEST: "false"
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+          LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+          METROLIST_BUILD_COMMIT: ${{ github.sha }}
+
+      - name: Sign APK
+        uses: ilharp/sign-android-release@v2.0.0
+        with:
+          releaseDir: app/build/outputs/apk/${{ github.event.inputs.variant }}/release/
+          signingKey: ${{ secrets.KEYSTORE }}
+          keyAlias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+          buildToolsVersion: 36.0.0
+
+      - name: Rename and upload APK
+        run: |
+          OUTPUT_DIR="app/build/outputs/apk/${{ github.event.inputs.variant }}/release"
+          mkdir -p "$OUTPUT_DIR/out"
+          SIGNED=$(find "$OUTPUT_DIR" -maxdepth 1 -name "*-signed.apk" | head -1)
+          if [ -z "$SIGNED" ]; then
+            SIGNED=$(find "$OUTPUT_DIR" -maxdepth 1 -name "*.apk" | head -1)
+          fi
+          APKNAME="Yorumi-${{ github.event.inputs.variant }}-quick.apk"
+          mv "$SIGNED" "$OUTPUT_DIR/out/$APKNAME"
+          echo "apk_path=$OUTPUT_DIR/out/$APKNAME" >> $GITHUB_ENV
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yorumi-quick-${{ github.event.inputs.variant }}
+          path: ${{ env.apk_path }}
+          retention-days: 14
