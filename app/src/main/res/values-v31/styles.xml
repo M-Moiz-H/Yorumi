@@ -15,7 +15,7 @@
     <style name="Theme.Metrolist.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#0D0010</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_round</item>
-        <item name="windowSplashScreenBrandingImage">@drawable/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.Metrolist</item>
     </style>
 </resources>
